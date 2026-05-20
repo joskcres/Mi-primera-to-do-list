@@ -7,10 +7,10 @@ btn.addEventListener('click', (event) => {
 
     //dibujando div para tareas
 
-    if (input.value != "") {
+    if (input.value.trim() != "") {
         let div = document.createElement('div')
         div.className = 'd-flex w-50 justify-content-between align-items-baseline info'
-        
+
         //dibujando checbox
 
         let checkbox = document.createElement('input')
@@ -21,14 +21,14 @@ btn.addEventListener('click', (event) => {
 
         let label = document.createElement('label')
 
-        checkbox.addEventListener('click', (event)=>{
+        checkbox.addEventListener('click', (event) => {
             label.classList.toggle('text-decoration-line-through')
         })
         //dibujar el span
 
         let span = document.createElement('span')
         span.textContent = 'x'
-        span.addEventListener('click', () =>{
+        span.addEventListener('click', () => {
             div.remove()
         })
 
@@ -38,8 +38,9 @@ btn.addEventListener('click', (event) => {
         div.append(label)
         div.append(span)
         tareas.append(div)
-        input.value = ''
-        
+
+
     }
+    input.value = ''
 })
 
