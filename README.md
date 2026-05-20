@@ -1,4 +1,4 @@
-#Mi primera To do list
+# Mi primera To do list
 
 Esta es mi primera to do list empezando con el manejo del DOM
 
