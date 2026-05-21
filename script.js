@@ -1,113 +1,102 @@
-const data = [
-    {
-        texto: 'Ganar en una partida de amoug us', estaCompletada: true, id: 1
-    },
-    {
-        texto: 'Ver el mundial', estaCompletada: false, id: 2
-    },
-    {
-        texto: 'Programar en mi pc', estaCompletada: false, id: 3
-    },
-    {
-        texto: 'Ganar la champios en mi liga master', estaCompletada: false, id: 4
-    }
+let data = []
 
-]
-
+//esto lo que hace es preguntar si existe data en el local storage si 
+// es aso lo guarta y si no agrega un arreglo vacio al local storage 
+// para almacenar los datos en el futuro
+if (JSON.parse(localStorage.getItem('data'))) {
+    data = JSON.parse(localStorage.getItem('data'))
+} else {
+    localStorage.setItem('data', JSON.stringify([]))
+}
 
 let input = document.querySelector('#inputTarea')
 let btn = document.querySelector('#btnTarea')
 let tareas = document.querySelector('#tareas')
-let contador = 0
 
+const dibujarElementos = (info = null, i = null) => {
+    let div = document.createElement('div')
+    div.className = 'd-flex w-50 justify-content-between align-items-baseline info'
 
-if (data.length > 0) {
-    for (let i = 1; i <= data.length; i++) {
-        let div = document.createElement('div')
-        div.className = 'd-flex w-50 justify-content-between align-items-baseline info'
+    //dibujando checbox
 
-        //dibujando checbox
+    let checkbox = document.createElement('input')
+    checkbox.setAttribute('type', 'checkbox') //El set atributte lo que hace es agregar el atributo a elemnto html el primer elemento lo que have es poner ael atributo y el segundo que atributo es
+    checkbox.className = 'me-2 checkbox'
+    //dibujando label
 
-        let checkbox = document.createElement('input')
-        checkbox.setAttribute('type', 'checkbox')
-        checkbox.setAttribute('id', data[i - 1].id)
+    let label = document.createElement('label')
 
-        checkbox.className = 'me-2'
+    //dibujar el span
 
-        //dibujando label
+    let span = document.createElement('span')
+    span.textContent = 'x'
+    span.className = 'eliminar'
 
-        let label = document.createElement('label')
-        if (data[i-1].estaCompletada) {
-            checkbox.checked = true;
-            label.classList.add('text-decoration-line-through')
-        }else{
-            label.classList.remove('text-decoration-line-through')
+    if (info == null || i == null) {
+        checkbox.setAttribute('id', getNextId())
+        span.setAttribute('id', getNextId())
+        label.textContent = input.value
+    } else {
+        checkbox.setAttribute('id', info[i].id)
+        label.textContent = info[i].texto
+        span.setAttribute('id', info[i].id)
+    }
+    //agregando elementos al div
+    div.append(checkbox)
+    div.append(label)
+    div.append(span)
+
+    return { div, checkbox, label, span }
+}
+
+const dibujarTodo = () => {
+    if (data.length > 0) {
+        for (let i = 0; i <= data.length - 1; i++) {
+            const { div, checkbox, label, span } = dibujarElementos(data, i);
+            if (data[i].estaCompletada) {
+                checkbox.checked = true;
+                label.classList.add('text-decoration-line-through')
+            } else {
+                checkbox.checked = false
+                label.classList.remove('text-decoration-line-through')
+            }
+            tareas.append(div)
         }
-
-        checkbox.addEventListener('click', (event) => {
-            console.log(event.target.id)
-            let tareaBuscar = data.find(item => item.id == event.target.id)
-            tareaBuscar.estaCompletada = !tareaBuscar.estaCompletada
-        if (tareaBuscar.estaCompletada) {
-            checkbox.checked = true;
-            label.classList.add('text-decoration-line-through')
-        }else{
-            label.classList.remove('text-decoration-line-through')
-        }
-        })
-        //dibujar el span
-
-        let span = document.createElement('span')
-        span.textContent = 'x'
-        span.addEventListener('click', () => {
-            div.remove()
-        })
-
-        //agregar elementos al div
-        label.textContent = data[i - 1].texto
-        div.append(checkbox)
-        div.append(label)
-        div.append(span)
-        tareas.append(div)
     }
 }
+
+//funcion para agregar los id sin duplicados para evitar futuros errres
+const getNextId = () => {
+    return data.length > 0 ? data[data.length - 1]?.id + 1 : 1
+}
+
+//revisamos si le hacemos click al div de tareas
+tareas.addEventListener('click', (event) => {
+    if (event.target.classList.contains('checkbox')) {
+        let tareaBuscar = data.find(item => item.id == event.target.id)
+        tareaBuscar.estaCompletada = !tareaBuscar.estaCompletada
+        if (tareaBuscar.estaCompletada) {
+            event.target.nextSibling.classList.add('text-decoration-line-through')
+        } else {
+            event.target.nextSibling.classList.remove('text-decoration-line-through')
+        }
+        //recisamos si apretamos eliminar elimina la tarea de data y lo quye queda se va para el local storage
+    } else if (event.target.classList.contains('eliminar')) {
+        event.target.parentElement.remove()
+        data = data.filter(item => item.id != event.target.id)
+        localStorage.setItem('data', JSON.stringify(data))
+    }
+
+})
+
 btn.addEventListener('click', (event) => {
-
-    //dibujando div para tareas
-
-    if (input.value.trim() != "") {
-        let div = document.createElement('div')
-        div.className = 'd-flex w-50 justify-content-between align-items-baseline info'
-
-        //dibujando checbox
-
-        let checkbox = document.createElement('input')
-        checkbox.setAttribute('type', 'checkbox')
-        checkbox.className = 'me-2'
-
-        //dibujando label
-
-        let label = document.createElement('label')
-
-        checkbox.addEventListener('click', (event) => {
-            console.log(event.target)
-            label.classList.toggle('text-decoration-line-through')
-        })
-        //dibujar el span
-
-        let span = document.createElement('span')
-        span.textContent = 'x'
-        span.addEventListener('click', () => {
-            div.remove()
-        })
-
-        //agregar elementos al div
-        label.textContent = input.value
-        div.append(checkbox)
-        div.append(label)
-        div.append(span)
-        tareas.append(div)
-        data.push({ id: data.length + 1, texto: input.value, estaCompletada: false })
+    //revisar que el input traiga algo si trae algo lo inserto a la data
+    if (input.value.trim() != '') {
+        data.push({ id: getNextId(), texto: input.value, estaCompletada: false })
+        localStorage.setItem('data', JSON.stringify(data))
+        tareas.innerHTML = ''
+        dibujarTodo()
     }
     input.value = ''
 })
+dibujarTodo()
